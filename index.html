@@ -1,84 +1,794 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>K线形态与指标图解 v3｜含高位钝化与低位钝化</title>
-<style>
-:root{
-  --bg:#0b1220; --bg2:#111827; --card:#ffffff; --ink:#162033; --muted:#64748b; --line:#e2e8f0;
-  --soft:#f8fafc; --red:#e33434; --green:#0f9f73; --blue:#2563eb; --orange:#f59e0b; --purple:#7c3aed;
-  --shadow:0 24px 70px rgba(15,23,42,.14); --radius:26px;
-}
-*{box-sizing:border-box} html{scroll-behavior:smooth}
-body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif;color:var(--ink);background:linear-gradient(180deg,#f6faff,#eef4fb 48%,#f8fafc)}
-a{color:inherit}.wrap{width:min(1160px,calc(100% - 40px));margin:0 auto}.hero{position:relative;overflow:hidden;color:#fff;background:radial-gradient(circle at 80% 12%,rgba(245,158,11,.2),transparent 25rem),radial-gradient(circle at 12% 18%,rgba(37,99,235,.24),transparent 25rem),linear-gradient(135deg,#0b1220,#172033);padding:60px 0 80px}.hero:after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 0 38%,rgba(255,255,255,.055) 39%,transparent 44%),repeating-linear-gradient(90deg,rgba(255,255,255,.045) 0 1px,transparent 1px 72px);pointer-events:none}.hero .wrap{position:relative;z-index:1;display:grid;grid-template-columns:1.02fr .98fr;gap:32px;align-items:center}.badge{display:inline-flex;gap:10px;align-items:center;padding:9px 13px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(255,255,255,.075);color:#dbeafe;font-weight:800;font-size:14px}.badge i{width:8px;height:8px;border-radius:99px;background:#60a5fa;box-shadow:0 0 24px #60a5fa}h1{margin:22px 0 18px;font-size:clamp(34px,5.6vw,72px);line-height:1.04;letter-spacing:-.055em}p.lead{font-size:18px;line-height:1.85;color:#64748b;margin:0 0 22px;max-width:880px}.hero p{color:#cbd5e1;font-size:clamp(16px,2vw,21px);line-height:1.8;margin:0;max-width:760px}.actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:26px}.btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font-weight:900;border-radius:14px;padding:12px 16px}.btn.primary{background:white;color:#0b1220}.btn.ghost{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);color:#e2e8f0}.hero-card{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:30px;padding:16px;box-shadow:0 24px 70px rgba(0,0,0,.24);backdrop-filter:blur(12px)}.nav{position:sticky;top:0;z-index:10;background:rgba(248,250,252,.86);backdrop-filter:blur(18px);border-bottom:1px solid rgba(148,163,184,.25)}.nav .wrap{display:flex;gap:8px;overflow:auto;padding:10px 0}.nav a{white-space:nowrap;text-decoration:none;font-size:14px;font-weight:900;color:#334155;border-radius:999px;padding:10px 12px}.nav a:hover{background:#fff;box-shadow:0 8px 25px rgba(15,23,42,.08)}main{padding:48px 0 90px}.section-title{font-size:clamp(28px,3vw,44px);letter-spacing:-.04em;line-height:1.12;margin:0 0 14px}.legend{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0 36px}.legend-card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:0 12px 32px rgba(15,23,42,.06)}.legend-card b{display:block;margin-bottom:6px}.legend-card span{display:block;color:var(--muted);font-size:14px;line-height:1.65}.panel{background:#fff;border:1px solid rgba(226,232,240,.95);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin:28px auto 44px}.panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;padding:28px 30px 8px}.panel-title{font-size:clamp(26px,3vw,42px);letter-spacing:-.04em;line-height:1.12;margin:0}.tag{white-space:nowrap;border-radius:999px;font-size:13px;font-weight:900;padding:8px 12px}.tag.bull{background:rgba(227,52,52,.1);color:#b91c1c}.tag.bear{background:rgba(15,159,115,.1);color:#047857}.tag.warn{background:rgba(245,158,11,.13);color:#b45309}.tag.info{background:rgba(37,99,235,.1);color:#1d4ed8}.panel-body{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(320px,.88fr);gap:22px;padding:18px 30px 30px}.chart-card{background:linear-gradient(180deg,#fff,#f8fafc);border:1px solid var(--line);border-radius:22px;padding:12px}.chart-title{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:10px 12px 2px;font-weight:900;color:#334155}.chart-title small{font-weight:800;color:#64748b}.explain{display:grid;gap:14px}.box{border:1px solid var(--line);border-radius:20px;background:#fff;padding:18px}.box h3{display:flex;align-items:center;gap:8px;margin:0 0 10px;font-size:17px}.box p,.box li{color:#475569;font-size:15px;line-height:1.8}.box p{margin:0}.num{display:inline-grid;place-items:center;min-width:24px;height:24px;border-radius:8px;background:#eff6ff;color:#2563eb;font-size:13px;font-weight:900}ul{margin:0;padding-left:18px}.summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.summary-card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:18px;box-shadow:0 12px 32px rgba(15,23,42,.06)}.summary-card h3{margin:0 0 8px;font-size:19px}.summary-card p{margin:0;color:#64748b;line-height:1.72;font-size:14px}.formula{margin-top:24px;background:#0f172a;color:#e2e8f0;border-radius:24px;padding:24px}.formula h2{margin:0 0 8px;color:#fff}.formula-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px}.formula-item{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:16px}.formula-item b{display:block;color:#fff;margin-bottom:8px}.formula-item span{color:#cbd5e1;line-height:1.7;font-size:14px}svg{display:block;width:100%;height:auto}.svg-text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif}.foot{color:#64748b;line-height:1.8;text-align:center;font-size:14px;margin-top:26px}@media(max-width:980px){.hero .wrap,.panel-body{grid-template-columns:1fr}.legend,.summary-grid,.formula-grid{grid-template-columns:1fr 1fr}.panel-head{display:block}.tag{display:inline-flex;margin-top:12px}}@media(max-width:620px){.wrap{width:min(100% - 26px,1160px)}.legend,.summary-grid,.formula-grid{grid-template-columns:1fr}.panel-head,.panel-body{padding-left:18px;padding-right:18px}.nav .wrap{width:100%;padding-left:10px;padding-right:10px}.hero{padding:40px 0 56px}}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>K线形态图解｜射击之星・早晨之星・乌云盖顶・孕线・MACD金叉・KDJ金叉</title>
+  <style>
+    :root{
+      --bg:#0f172a;
+      --bg2:#111827;
+      --panel:#ffffff;
+      --ink:#172033;
+      --muted:#64748b;
+      --line:#e5e7eb;
+      --soft:#f8fafc;
+      --red:#e03b3b;     /* 中文交易软件常见：红涨 */
+      --green:#10966e;   /* 中文交易软件常见：绿跌 */
+      --gold:#f59e0b;
+      --blue:#2563eb;
+      --purple:#7c3aed;
+      --shadow: 0 22px 60px rgba(15,23,42,.16);
+      --radius: 26px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      color:var(--ink);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Arial,sans-serif;
+      background:
+        radial-gradient(circle at 12% 4%, rgba(37,99,235,.22), transparent 28rem),
+        radial-gradient(circle at 88% 3%, rgba(245,158,11,.16), transparent 22rem),
+        linear-gradient(180deg,#f8fbff 0%,#eef4fb 48%,#f8fafc 100%);
+    }
+    a{color:inherit}
+    .hero{
+      position:relative;
+      min-height:520px;
+      padding:54px 22px 80px;
+      color:white;
+      overflow:hidden;
+      background:
+        linear-gradient(135deg,rgba(15,23,42,.98),rgba(30,41,59,.94)),
+        repeating-linear-gradient(90deg,rgba(255,255,255,.04) 0 1px, transparent 1px 64px);
+    }
+    .hero:before{
+      content:"";
+      position:absolute; inset:-20%;
+      background:
+        linear-gradient(115deg, transparent 0 38%, rgba(255,255,255,.06) 39%, transparent 43%),
+        radial-gradient(circle at 65% 28%, rgba(224,59,59,.22), transparent 16rem),
+        radial-gradient(circle at 82% 65%, rgba(16,150,110,.18), transparent 17rem);
+      pointer-events:none;
+    }
+    .wrap{width:min(1160px,100%); margin:0 auto; position:relative; z-index:1;}
+    .kicker{
+      display:inline-flex; gap:10px; align-items:center;
+      padding:8px 12px;
+      border:1px solid rgba(255,255,255,.18);
+      border-radius:999px;
+      color:#dbeafe;
+      background:rgba(255,255,255,.06);
+      backdrop-filter:blur(10px);
+      font-size:14px;
+    }
+    .dot{width:8px;height:8px;border-radius:999px;background:#60a5fa;box-shadow:0 0 22px #60a5fa}
+    h1{
+      margin:24px 0 18px;
+      font-size:clamp(36px,6vw,76px);
+      line-height:1.03;
+      letter-spacing:-.055em;
+      max-width:980px;
+    }
+    .hero p{
+      max-width:760px;
+      color:#cbd5e1;
+      font-size:clamp(16px,2vw,21px);
+      line-height:1.75;
+      margin:0 0 26px;
+    }
+    .hero-grid{display:grid;grid-template-columns:1.08fr .92fr; gap:28px; align-items:end;}
+    .hero-card{
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:28px;
+      padding:22px;
+      box-shadow:0 24px 70px rgba(0,0,0,.22);
+      backdrop-filter: blur(14px);
+    }
+    .mini-chart{height:260px;}
+    .hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;gap:8px;
+      padding:12px 16px;border-radius:14px;text-decoration:none;font-weight:700;
+      transition:.18s transform ease,.18s box-shadow ease,.18s background ease;
+    }
+    .btn:hover{transform:translateY(-2px)}
+    .btn.primary{background:#fff;color:#0f172a;box-shadow:0 12px 30px rgba(255,255,255,.16)}
+    .btn.ghost{background:rgba(255,255,255,.08);color:#e2e8f0;border:1px solid rgba(255,255,255,.14)}
+    .topnav{
+      position:sticky;top:0;z-index:5;
+      background:rgba(248,250,252,.82);
+      backdrop-filter:blur(18px);
+      border-bottom:1px solid rgba(148,163,184,.22);
+    }
+    .topnav .wrap{display:flex;gap:10px;align-items:center;justify-content:center;padding:10px 16px;overflow:auto;}
+    .topnav a{white-space:nowrap;text-decoration:none;font-weight:700;font-size:14px;color:#334155;padding:10px 12px;border-radius:999px;}
+    .topnav a:hover{background:white;box-shadow:0 8px 24px rgba(15,23,42,.08)}
+    main{padding:48px 20px 86px}
+    .section-title{margin:0 0 18px;font-size:clamp(28px,3vw,44px);letter-spacing:-.035em;color:#111827;}
+    .lead{color:#64748b;line-height:1.8;font-size:18px;max-width:850px;margin:0 0 24px}
+    .legend{
+      display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin:24px 0 36px;
+    }
+    .legend-card{
+      background:white;border:1px solid rgba(226,232,240,.9);border-radius:20px;padding:18px;
+      box-shadow:0 12px 34px rgba(15,23,42,.06);
+    }
+    .legend-card b{display:block;margin-bottom:6px;color:#0f172a}
+    .legend-card span{color:#64748b;font-size:14px;line-height:1.6}
+    .sample-candle{display:inline-block;width:16px;height:32px;vertical-align:middle;margin-right:8px;position:relative;top:8px}
+    .sample-candle:before{content:"";position:absolute;left:7px;top:-8px;width:2px;height:48px;background:#475569}
+    .sample-candle:after{content:"";position:absolute;left:2px;top:6px;width:12px;height:22px;border-radius:3px;background:var(--c)}
+    .panel{
+      background:var(--panel); border:1px solid rgba(226,232,240,.95); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden;
+      margin:28px 0 44px;
+    }
+    .panel-head{padding:28px 30px 12px;display:flex;justify-content:space-between;gap:20px;align-items:flex-start;}
+    .panel-title{margin:0;font-size:clamp(26px,3vw,42px);letter-spacing:-.04em;line-height:1.1}
+    .tag{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:8px 12px;font-weight:800;font-size:13px;white-space:nowrap;}
+    .tag.bear{background:rgba(16,150,110,.11);color:#047857}
+    .tag.bull{background:rgba(224,59,59,.11);color:#b91c1c}
+    .tag.warn{background:rgba(245,158,11,.12);color:#b45309}
+    .panel-body{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(320px,.88fr);gap:22px;padding:16px 30px 30px;align-items:start;}
+    .chart-card{background:linear-gradient(180deg,#ffffff,#f8fafc);border:1px solid #e2e8f0;border-radius:22px;padding:12px;min-height:430px;}
+    .chart-title{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px 12px 0;font-weight:800;color:#334155}
+    .chart-note{font-size:13px;color:#64748b;font-weight:600}
+    svg{display:block;width:100%;height:auto;}
+    .explain{display:grid;gap:14px}
+    .info-box{border:1px solid #e2e8f0;background:#fff;border-radius:20px;padding:18px;}
+    .info-box h3{margin:0 0 10px;font-size:17px;color:#0f172a;display:flex;align-items:center;gap:8px}
+    .info-box p,.info-box li{color:#475569;line-height:1.75;font-size:15px}
+    .info-box p{margin:0}
+    ul{margin:0;padding-left:18px}
+    .checklist li{margin:6px 0}
+    .number{display:inline-grid;place-items:center;width:23px;height:23px;border-radius:8px;background:#eff6ff;color:#2563eb;font-size:13px;font-weight:900;flex:0 0 auto;}
+    .compare{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:20px;}
+    .compare-card{background:#fff;border:1px solid #e2e8f0;border-radius:22px;padding:20px;box-shadow:0 12px 34px rgba(15,23,42,.06)}
+    .compare-card h3{margin:0 0 10px;font-size:20px;color:#0f172a}
+    .compare-card p{margin:0;color:#64748b;line-height:1.7;font-size:15px}
+    .formula{
+      margin-top:24px;background:#0f172a;color:#e2e8f0;border-radius:24px;padding:24px;border:1px solid rgba(255,255,255,.08);
+      box-shadow:0 18px 50px rgba(15,23,42,.18);
+    }
+    .formula h2{margin:0 0 12px;font-size:28px;letter-spacing:-.03em;color:white}
+    .formula-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px}
+    .formula-item{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:16px;}
+    .formula-item b{color:#fff;display:block;margin-bottom:8px}
+    .formula-item span{color:#cbd5e1;line-height:1.7;font-size:14px}
+    .footnote{margin-top:26px;color:#64748b;line-height:1.8;font-size:14px;text-align:center;}
+    .pill-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .pill{background:#f1f5f9;color:#475569;border:1px solid #e2e8f0;border-radius:999px;padding:7px 10px;font-size:13px;font-weight:700}
+    .svg-text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif;}
+    @media (max-width: 920px){
+      .hero-grid,.panel-body{grid-template-columns:1fr}
+      .legend,.compare,.formula-grid{grid-template-columns:1fr 1fr}
+      .panel-head{display:block}.tag{margin-top:14px}
+    }
+    @media (max-width: 620px){
+      .legend,.compare,.formula-grid{grid-template-columns:1fr}
+      .hero{padding-top:34px;min-height:auto}.panel-head,.panel-body{padding-left:18px;padding-right:18px}
+      .chart-card{min-height:0}.topnav .wrap{justify-content:flex-start}
+    }
+  </style>
 </head>
 <body>
-<header class="hero">
-  <div class="wrap">
-    <div>
-      <div class="badge"><i></i> K线形态 + 指标金叉 + 高低位钝化 · v3</div>
-      <h1>一页看懂 K 线形态、MACD/KDJ 金叉与钝化</h1>
-      <p>这版已明确加入“高位钝化 / 低位钝化”：在导航、正文、图例和速记区都能看到。图例使用接近交易软件的红涨绿跌 K 线、MACD 副图和 KDJ 副图，不做抽象符号图。</p>
-      <div class="actions"><a class="btn primary" href="#passivation">直接看钝化</a><a class="btn ghost" href="#summary">看速记区别</a></div>
+  <header class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <div class="kicker"><span class="dot"></span> K线反转形态 · 结构化图解</div>
+        <h1>六种经典技术信号：K线形态、MACD 金叉、KDJ 金叉</h1>
+        <p>这份网页用接近真实交易软件的图例来解释技术信号：前半部分讲射击之星、早晨之星、乌云盖顶；新增部分补充孕线、MACD 金叉、KDJ 金叉，并用主图与指标副图标出关键交叉、确认位置和容易误判的条件。</p>
+        <div class="hero-actions">
+          <a class="btn primary" href="#shooting-star">开始学习</a>
+          <a class="btn ghost" href="#summary">查看速记口诀</a>
+        </div>
+      </div>
+      <div class="hero-card">
+        <div class="chart-title" style="color:#e2e8f0;padding:0 4px 8px"><span>真实K线的四个价格</span><span class="chart-note" style="color:#94a3b8">OHLC</span></div>
+        <svg class="mini-chart" viewBox="0 0 560 260" aria-label="K线基础示意图">
+          <defs>
+            <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="10" stdDeviation="8" flood-color="#000" flood-opacity=".25"/></filter>
+            <marker id="arrowWhite" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="#e2e8f0"/></marker>
+          </defs>
+          <rect x="0" y="0" width="560" height="260" rx="22" fill="rgba(255,255,255,.04)"/>
+          <g stroke="rgba(255,255,255,.1)" stroke-width="1">
+            <path d="M44 45H520M44 95H520M44 145H520M44 195H520"/>
+          </g>
+          <g transform="translate(250 30)" filter="url(#softShadow)">
+            <line x1="40" y1="8" x2="40" y2="190" stroke="#cbd5e1" stroke-width="5" stroke-linecap="round"/>
+            <rect x="14" y="66" width="52" height="82" rx="8" fill="#e03b3b"/>
+            <line x1="-95" y1="66" x2="7" y2="66" stroke="#e2e8f0" stroke-width="2" marker-end="url(#arrowWhite)"/>
+            <line x1="73" y1="148" x2="175" y2="148" stroke="#e2e8f0" stroke-width="2" marker-end="url(#arrowWhite)"/>
+            <line x1="40" y1="8" x2="40" y2="-8" stroke="#e2e8f0" stroke-width="2" marker-end="url(#arrowWhite)"/>
+            <line x1="40" y1="190" x2="40" y2="211" stroke="#e2e8f0" stroke-width="2" marker-end="url(#arrowWhite)"/>
+            <text class="svg-text" x="-102" y="62" fill="#e2e8f0" font-size="16" text-anchor="end" font-weight="800">开盘</text>
+            <text class="svg-text" x="180" y="153" fill="#e2e8f0" font-size="16" font-weight="800">收盘</text>
+            <text class="svg-text" x="40" y="-18" fill="#e2e8f0" font-size="16" text-anchor="middle" font-weight="800">最高</text>
+            <text class="svg-text" x="40" y="238" fill="#e2e8f0" font-size="16" text-anchor="middle" font-weight="800">最低</text>
+          </g>
+          <text class="svg-text" x="26" y="236" fill="#94a3b8" font-size="13">红色阳线：收盘价高于开盘价</text>
+        </svg>
+      </div>
     </div>
-    <div class="hero-card"><svg id="heroChart" viewBox="0 0 760 430" aria-label="网页封面K线与指标图"></svg></div>
-  </div>
-</header>
-<nav class="nav"><div class="wrap">
-  <a href="#basics">K线基础</a><a href="#shooting-star">射击之星</a><a href="#morning-star">早晨之星</a><a href="#dark-cloud">乌云盖顶</a><a href="#harami">孕线</a><a href="#macd-golden">MACD金叉</a><a href="#kdj-golden">KDJ金叉</a><a href="#passivation">高低位钝化</a><a href="#summary">速记</a>
-</div></nav>
-<main>
-<section id="basics" class="wrap">
-  <h2 class="section-title">先记住：K线与指标看的不是“像不像”，而是位置、结构、确认</h2>
-  <p class="lead">K线形态强调价格行为：开盘、收盘、最高、最低之间的关系。MACD 与 KDJ 强调指标副图：快慢线、零轴、柱体或 20/80 极值区间。钝化则提醒你：指标到极端位置后，强趋势可能让它长时间不反转。</p>
-  <div class="legend">
-    <div class="legend-card"><b style="color:var(--red)">红色阳线</b><span>收盘价高于开盘价，常见于中文行情软件的上涨 K 线。</span></div>
-    <div class="legend-card"><b style="color:var(--green)">绿色阴线</b><span>收盘价低于开盘价，常见于中文行情软件的下跌 K 线。</span></div>
-    <div class="legend-card"><b>影线</b><span>上下影线分别表示盘中最高价与最低价，常用于观察冲高失败或探底回升。</span></div>
-    <div class="legend-card"><b>确认</b><span>单个形态只是提示，后一根 K 线、支撑压力、成交量和趋势破位才是关键。</span></div>
-  </div>
-</section>
+  </header>
 
-<section id="shooting-star" class="wrap panel"><div class="panel-head"><h2 class="panel-title">一、射击之星 Shooting Star</h2><span class="tag bear">上涨末端 · 看跌警告</span></div><div class="panel-body"><div class="chart-card"><div class="chart-title"><span>图例：长上影、小实体、冲高失败</span><small>单根K线形态</small></div><svg id="chart-shooting" viewBox="0 0 760 430"></svg></div><div class="explain"><div class="box"><h3><span class="num">1</span>它长什么样？</h3><p>上涨一段后，某天价格大幅冲高，但收盘又被压回开盘附近，留下很长的上影线和较小实体。</p></div><div class="box"><h3><span class="num">2</span>市场含义</h3><p>多头曾经尝试继续上攻，但高位抛压很强，最后没有守住涨幅，是顶部压力出现的信号。</p></div><div class="box"><h3><span class="num">3</span>识别重点</h3><ul><li>必须出现在上涨后，横盘中意义较弱。</li><li>上影线明显长于实体，实体靠近当日低位。</li><li>后一根若继续收阴或跌破低点，确认度更高。</li></ul></div></div></div></section>
+  <nav class="topnav">
+    <div class="wrap">
+      <a href="#basics">K线基础</a>
+      <a href="#shooting-star">射击之星</a>
+      <a href="#morning-star">早晨之星</a>
+      <a href="#dark-cloud">乌云盖顶</a>
+      <a href="#harami">孕线</a>
+      <a href="#macd-golden">MACD 金叉</a>
+      <a href="#kdj-golden">KDJ 金叉</a>
+      <a href="#summary">速记与误判</a>
+    </div>
+  </nav>
 
-<section id="morning-star" class="wrap panel"><div class="panel-head"><h2 class="panel-title">二、早晨之星 Morning Star</h2><span class="tag bull">下跌末端 · 看涨反转</span></div><div class="panel-body"><div class="chart-card"><div class="chart-title"><span>图例：长阴 → 星线 → 强阳</span><small>三根K线形态</small></div><svg id="chart-morning" viewBox="0 0 760 430"></svg></div><div class="explain"><div class="box"><h3><span class="num">1</span>它长什么样？</h3><p>第一根是长阴线，第二根是小实体或十字星，第三根是强阳线，并收复第一根阴线实体的一半以上。</p></div><div class="box"><h3><span class="num">2</span>市场含义</h3><p>空方先猛烈下压，随后动能停顿，最后多方反攻，表示下跌趋势可能从恐慌进入修复。</p></div><div class="box"><h3><span class="num">3</span>识别重点</h3><ul><li>必须有前置下跌趋势。</li><li>第三根阳线越强，反转意味越明显。</li><li>配合放量或重要支撑位更可靠。</li></ul></div></div></div></section>
+  <main>
+    <section id="basics" class="wrap">
+      <h2 class="section-title">先看懂图例：这份网页按中文行情软件习惯绘制</h2>
+      <p class="lead">K线不是单纯看“像不像”，而是要同时看：出现位置、实体大小、上下影线、跳空关系、收盘位置和下一根K线确认。下面三个形态都属于“趋势末端的反转警告”，不是单根K线就能保证反转。</p>
+      <div class="legend">
+        <div class="legend-card"><b><span class="sample-candle" style="--c:var(--red)"></span>红色阳线</b><span>收盘价 &gt; 开盘价，表示当期价格上行。A股、港股等中文软件常用红涨。</span></div>
+        <div class="legend-card"><b><span class="sample-candle" style="--c:var(--green)"></span>绿色阴线</b><span>收盘价 &lt; 开盘价，表示当期价格下行。乌云盖顶第二根通常是较强阴线。</span></div>
+        <div class="legend-card"><b>实体与影线</b><span>实体是开盘到收盘之间的价格区间；影线是最高价、最低价留下的拉扯痕迹。</span></div>
+        <div class="legend-card"><b>趋势背景</b><span>射击之星、乌云盖顶要先有上涨背景；早晨之星要先有下跌背景。</span></div>
+      </div>
+    </section>
 
-<section id="dark-cloud" class="wrap panel"><div class="panel-head"><h2 class="panel-title">三、乌云盖顶 Dark Cloud Cover</h2><span class="tag bear">上涨末端 · 高开低走</span></div><div class="panel-body"><div class="chart-card"><div class="chart-title"><span>图例：高开后跌入前一根阳线实体</span><small>双K线形态</small></div><svg id="chart-dark" viewBox="0 0 760 430"></svg></div><div class="explain"><div class="box"><h3><span class="num">1</span>它长什么样？</h3><p>上涨后先出现一根长阳线，下一根高开，但收盘大幅回落，并跌破前一根阳线实体中点。</p></div><div class="box"><h3><span class="num">2</span>市场含义</h3><p>高开本应代表强势延续，但最终被空头压回，说明高位承接不足，多头优势被明显削弱。</p></div><div class="box"><h3><span class="num">3</span>识别重点</h3><ul><li>第二根必须高开或至少明显冲高。</li><li>收盘越深入前一根阳线实体，看跌意味越强。</li><li>后一根继续走弱才更像顶部确认。</li></ul></div></div></div></section>
+    <section id="shooting-star" class="wrap panel">
+      <div class="panel-head">
+        <h2 class="panel-title">一、射击之星 Shooting Star</h2>
+        <span class="tag bear">上涨后出现 · 看跌反转警告</span>
+      </div>
+      <div class="panel-body">
+        <div class="chart-card">
+          <div class="chart-title"><span>图例：上涨末端出现长上影小实体</span><span class="chart-note">第 6 根为形态核心</span></div>
+          <svg id="chart-shooting" viewBox="0 0 760 430" role="img" aria-label="射击之星K线形态图"></svg>
+        </div>
+        <div class="explain">
+          <div class="info-box"><h3><span class="number">1</span>它长什么样？</h3><p>出现在一段上涨之后，实体很小，位置靠近当天低位，上影线很长，下影线很短或几乎没有。颜色可以是阳线也可以是阴线，但阴线更弱。</p></div>
+          <div class="info-box"><h3><span class="number">2</span>市场含义</h3><p>盘中价格一度大幅冲高，说明买方继续追涨；但收盘被压回低位，说明上方卖压明显，追高资金被套在上影线区域。</p></div>
+          <div class="info-box"><h3><span class="number">3</span>识别条件</h3><ul class="checklist"><li>必须先有明显上涨，不能出现在横盘中随便命名。</li><li>上影线最好达到实体的 2 倍以上。</li><li>实体越小、越靠近低位，形态越标准。</li><li>下一根若继续收阴或跌破射击之星低点，确认性更强。</li></ul></div>
+        </div>
+      </div>
+    </section>
 
-<section id="harami" class="wrap panel"><div class="panel-head"><h2 class="panel-title">四、孕线 Harami</h2><span class="tag info">趋势犹豫 · 等待确认</span></div><div class="panel-body"><div class="chart-card"><div class="chart-title"><span>图例：前一根大实体包住后一根小实体</span><small>看涨孕线 / 看跌孕线</small></div><svg id="chart-harami" viewBox="0 0 760 430"></svg></div><div class="explain"><div class="box"><h3><span class="num">1</span>它长什么样？</h3><p>第一根是较大的“母线”，第二根是较小的“子线”。关键是第二根实体完整落在第一根实体内部，像被前一根大 K 线怀在里面。</p></div><div class="box"><h3><span class="num">2</span>两种方向</h3><p>下跌后的长阴 + 小阳常被称为看涨孕线；上涨后的长阳 + 小阴常被称为看跌孕线。它的核心不是直接反转，而是原趋势开始犹豫。</p></div><div class="box"><h3><span class="num">3</span>识别重点</h3><ul><li>经典定义主要看“实体被包含”。</li><li>第二根实体越小，犹豫感越强。</li><li>必须等待后续突破母线方向来确认。</li></ul></div></div></div></section>
+    <section id="morning-star" class="wrap panel">
+      <div class="panel-head">
+        <h2 class="panel-title">二、早晨之星 Morning Star</h2>
+        <span class="tag bull">下跌后出现 · 看涨反转组合</span>
+      </div>
+      <div class="panel-body">
+        <div class="chart-card">
+          <div class="chart-title"><span>图例：三根K线组成的底部反转结构</span><span class="chart-note">阴线 → 星线 → 阳线</span></div>
+          <svg id="chart-morning" viewBox="0 0 760 430" role="img" aria-label="早晨之星K线形态图"></svg>
+        </div>
+        <div class="explain">
+          <div class="info-box"><h3><span class="number">1</span>它长什么样？</h3><p>由三根K线组成：第一根是较长阴线；第二根是向下跳空或低位小实体“星线”；第三根是较强阳线，收盘最好深入第一根阴线实体的一半以上。</p></div>
+          <div class="info-box"><h3><span class="number">2</span>市场含义</h3><p>第一根说明空方仍强；第二根说明下跌动能停顿；第三根强阳线说明多方重新夺回主动权，是三者中确认度最高的一根。</p></div>
+          <div class="info-box"><h3><span class="number">3</span>识别条件</h3><ul class="checklist"><li>出现在持续下跌或快速回落之后。</li><li>中间星线实体要小，最好与前后K线形成视觉上的分离。</li><li>第三根阳线收得越高越好，至少应明显进入第一根阴线实体。</li><li>成交量若在第三根放大，反转可信度更高。</li></ul></div>
+        </div>
+      </div>
+    </section>
 
-<section id="macd-golden" class="wrap panel"><div class="panel-head"><h2 class="panel-title">五、MACD 金叉</h2><span class="tag bull">趋势动能 · 快线转强</span></div><div class="panel-body"><div class="chart-card"><div class="chart-title"><span>图例：DIF 从下向上穿越 DEA</span><small>绿柱缩短并转红</small></div><svg id="chart-macd" viewBox="0 0 760 430"></svg></div><div class="explain"><div class="box"><h3><span class="num">1</span>MACD 由什么组成？</h3><p>DIF 是快线，DEA 是慢线，MACD 柱表示 DIF 与 DEA 的距离。柱体越长，快慢线差距越大。</p></div><div class="box"><h3><span class="num">2</span>金叉长什么样？</h3><p>当 DIF 快线从下方向上穿过 DEA 慢线，就是 MACD 金叉。图上常伴随绿柱缩短、靠近零轴，并逐渐转为红柱。</p></div><div class="box"><h3><span class="num">3</span>怎么看强弱？</h3><ul><li>零轴下方金叉：多为弱势反弹。</li><li>零轴附近金叉：多空转换意义更强。</li><li>零轴上方金叉：偏强势延续，但要小心高位钝化。</li></ul></div></div></div></section>
+    <section id="dark-cloud" class="wrap panel">
+      <div class="panel-head">
+        <h2 class="panel-title">三、乌云盖顶 Dark Cloud Cover</h2>
+        <span class="tag warn">上涨后出现 · 双K线看跌反转</span>
+      </div>
+      <div class="panel-body">
+        <div class="chart-card">
+          <div class="chart-title"><span>图例：高开后阴线跌入前一根阳线实体一半以下</span><span class="chart-note">关键是“收盘跌破中点”</span></div>
+          <svg id="chart-dark" viewBox="0 0 760 430" role="img" aria-label="乌云盖顶K线形态图"></svg>
+        </div>
+        <div class="explain">
+          <div class="info-box"><h3><span class="number">1</span>它长什么样？</h3><p>出现在上涨趋势之后。第一根是较长阳线；第二根高开，最好开在前一根最高价之上，但随后一路回落，收盘跌进前一根阳线实体，并低于其实体中点。</p></div>
+          <div class="info-box"><h3><span class="number">2</span>市场含义</h3><p>第二天高开本来代表买方情绪继续亢奋，但收盘反而深度回落，说明高位承接失败，卖方把上涨成果“盖住”了一大半。</p></div>
+          <div class="info-box"><h3><span class="number">3</span>识别条件</h3><ul class="checklist"><li>第一根必须是明显阳线，不能是普通小阳线。</li><li>第二根要高开，且为较强阴线。</li><li>第二根收盘低于第一根实体中点，越低越强。</li><li>若第二根直接跌破第一根开盘价，则更接近看跌吞没，杀伤力更强。</li></ul></div>
+        </div>
+      </div>
+    </section>
 
-<section id="kdj-golden" class="wrap panel"><div class="panel-head"><h2 class="panel-title">六、KDJ 金叉</h2><span class="tag bull">短线摆动 · K上穿D</span></div><div class="panel-body"><div class="chart-card"><div class="chart-title"><span>图例：低位K线上穿D线，J线先拐头</span><small>重点看 20 / 50 / 80</small></div><svg id="chart-kdj" viewBox="0 0 760 430"></svg></div><div class="explain"><div class="box"><h3><span class="num">1</span>KDJ 由什么组成？</h3><p>K 线反应较快，D 线更平滑，J 线波动最大。它常用来观察价格在近期区间里的强弱位置。</p></div><div class="box"><h3><span class="num">2</span>金叉长什么样？</h3><p>KDJ 金叉指 K 线从下方向上穿过 D 线。实际图中常见 J 线率先拐头，然后 K 线上穿 D 线。</p></div><div class="box"><h3><span class="num">3</span>不同位置含义不同</h3><ul><li>20 附近金叉：偏超卖反弹。</li><li>50 附近金叉：短线由弱转强。</li><li>80 以上金叉：可能是强势延续，也可能是追高风险。</li></ul></div></div></div></section>
 
-<section id="passivation" class="wrap panel"><div class="panel-head"><h2 class="panel-title">七、高位钝化与低位钝化</h2><span class="tag warn">本版新增 · 强趋势中的极值停留</span></div><div class="panel-body"><div class="chart-card"><div class="chart-title"><span>图例：左高位钝化，右低位钝化</span><small>KDJ 长期停留在 80上方 / 20下方</small></div><svg id="chart-passivation" viewBox="0 0 760 430"></svg></div><div class="explain"><div class="box"><h3><span class="num">1</span>高位钝化是什么？</h3><p>高位钝化常见于强势上涨阶段：KDJ 已经进入 80 以上的高位区，甚至长时间停留在高位，但价格没有马上转跌，反而继续沿趋势创新高。指标“很热”，不等于立刻见顶。</p></div><div class="box"><h3><span class="num">2</span>低位钝化是什么？</h3><p>低位钝化常见于强势下跌阶段：KDJ 长时间运行在 20 以下，哪怕偶尔出现金叉，价格也可能只是短暂反抽后继续下行。指标“很冷”，不等于立刻见底。</p></div><div class="box"><h3><span class="num">3</span>为什么会钝化？</h3><ul><li>摆动指标衡量区间强弱，不是趋势结束按钮。</li><li>单边趋势太强时，价格持续贴着区间上沿或下沿运行。</li><li>所以超买/超卖会失去“立刻反转”的提示力。</li><li>钝化本质上是趋势很强，而不是马上反向。</li></ul></div><div class="box"><h3><span class="num">4</span>实战怎么避免误判？</h3><ul><li>高位钝化时，不要只因为指标高就急着看空，先等趋势线、均线或前低被跌破。</li><li>低位钝化时，不要只因为指标低就急着抄底，先等放量止跌、反转K线或平台突破。</li><li>钝化结束后若叠加背离、破位、放量，拐点信号才更可靠。</li></ul></div></div></div></section>
+    <section id="harami" class="wrap panel">
+      <div class="panel-head">
+        <h2 class="panel-title">四、孕线 Harami</h2>
+        <span class="tag warn">两根K线组合 · 反转或停顿信号</span>
+      </div>
+      <div class="panel-body">
+        <div class="chart-card">
+          <div class="chart-title"><span>图例：第二根小实体被第一根长实体“包在里面”</span><span class="chart-note">母线 → 子线</span></div>
+          <svg id="chart-harami" viewBox="0 0 760 460" role="img" aria-label="孕线K线形态图"></svg>
+        </div>
+        <div class="explain">
+          <div class="info-box"><h3><span class="number">1</span>它长什么样？</h3><p>孕线由两根K线组成：第一根是较长实体，称为“母线”；第二根实体明显变小，并且实体范围被第一根实体包住，像“母体中孕育出小K线”。严格版本会要求第二根整根K线都在第一根范围内，普通教学中通常重点看实体包含关系。</p></div>
+          <div class="info-box"><h3><span class="number">2</span>市场含义</h3><p>第一根长实体说明原趋势力量很强；第二根突然收成小实体，说明原方向动能停顿，市场从单边推进变成犹豫。它不是单独的买入或卖出信号，方向要结合前面的趋势判断。</p></div>
+          <div class="info-box"><h3><span class="number">3</span>两种常见方向</h3><ul class="checklist"><li>上涨后出现“长阳 + 小阴/小阳”，偏向看跌孕线，表示高位推进受阻。</li><li>下跌后出现“长阴 + 小阳/小阴”，偏向看涨孕线，表示低位抛压减弱。</li><li>第二根实体越小，停顿感越强；若接近十字星，就接近“十字孕线”。</li><li>最好等待后一根K线突破母线方向来确认，不要只凭两根K线立刻下结论。</li></ul></div>
+        </div>
+      </div>
+    </section>
 
-<section id="summary" class="wrap"><h2 class="section-title">速记：形态、金叉、钝化的核心区别</h2><p class="lead">最容易出错的是把所有信号都当成“买卖按钮”。更合理的理解是：K线形态看价格行为，金叉看动能转强，钝化看强趋势下指标失灵。</p><div class="summary-grid"><div class="summary-card"><h3>射击之星</h3><p>上涨后冲高失败，长上影代表高位压力。</p></div><div class="summary-card"><h3>早晨之星</h3><p>下跌后长阴、小星线、强阳线，表示空方衰竭后多方反攻。</p></div><div class="summary-card"><h3>乌云盖顶</h3><p>上涨后高开低走，收盘跌进前一根阳线实体一半以下。</p></div><div class="summary-card"><h3>孕线</h3><p>大K线包含小K线，原趋势从果断变犹豫，必须等确认。</p></div><div class="summary-card"><h3>MACD金叉</h3><p>DIF 上穿 DEA，绿柱缩短转红，零轴附近或上方更强。</p></div><div class="summary-card"><h3>KDJ金叉</h3><p>K 上穿 D，J 通常先拐头，低位金叉偏反弹，中位金叉偏转强。</p></div><div class="summary-card"><h3>高位钝化</h3><p>KDJ 长期在 80 上方，价格仍上涨；不能只因超买就做空。</p></div><div class="summary-card"><h3>低位钝化</h3><p>KDJ 长期在 20 下方，价格仍下跌；不能只因超卖就抄底。</p></div></div><div class="formula"><h2>实战口诀</h2><div class="formula-grid"><div class="formula-item"><b>先看位置</b><span>顶部信号要在上涨后，底部信号要在下跌后。</span></div><div class="formula-item"><b>再看结构</b><span>实体、影线、收盘位置、包含关系和交叉位置必须符合定义。</span></div><div class="formula-item"><b>最后等确认</b><span>后一根K线、趋势线、均线、成交量和支撑压力共同验证。</span></div><div class="formula-item"><b>高低位钝化</b><span>高位不一定跌，低位不一定涨；极端区先看趋势，再等破位或反转。</span></div><div class="formula-item"><b>金叉不是万能</b><span>弱势里金叉可能只是反抽，强势里死叉也可能只是洗盘。</span></div><div class="formula-item"><b>形态不是指令</b><span>它们是风险提示和观察框架，不是单独买卖依据。</span></div></div></div><p class="foot">说明：本网页用于技术形态教学，不构成投资建议。图例为标准化教学图，使用红涨绿跌的中文行情软件习惯。</p></section>
-</main>
+    <section id="macd-golden" class="wrap panel">
+      <div class="panel-head">
+        <h2 class="panel-title">五、MACD 金叉</h2>
+        <span class="tag bull">DIF 上穿 DEA · 趋势动能转强</span>
+      </div>
+      <div class="panel-body">
+        <div class="chart-card">
+          <div class="chart-title"><span>图例：主图企稳后，DIF 从下向上穿过 DEA</span><span class="chart-note">副图含柱状图与零轴</span></div>
+          <svg id="chart-macd" viewBox="0 0 760 500" role="img" aria-label="MACD金叉图解"></svg>
+        </div>
+        <div class="explain">
+          <div class="info-box"><h3><span class="number">1</span>它是什么？</h3><p>MACD 金叉指 DIF 线从下方向上穿过 DEA 线。它表示短期动能开始强于中期动能，市场由弱转强的可能性提高。图中金色圆点就是金叉发生的位置。</p></div>
+          <div class="info-box"><h3><span class="number">2</span>怎么看更可靠？</h3><p>不要只看“交叉”本身，还要看交叉的位置。零轴下方金叉多是弱势反弹或底部修复；零轴附近或零轴上方金叉通常更强，因为价格已经接近或进入多头环境。</p></div>
+          <div class="info-box"><h3><span class="number">3</span>识别条件</h3><ul class="checklist"><li>DIF 必须明确从下往上穿过 DEA，而不是两条线贴在一起抖动。</li><li>MACD 柱状图由绿柱缩短、翻红或红柱放大，说明动能正在改善。</li><li>若价格同步放量上破压力位，确认度更高。</li><li>横盘震荡时 MACD 容易频繁假金叉，需要结合趋势和成交量过滤。</li></ul></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="kdj-golden" class="wrap panel">
+      <div class="panel-head">
+        <h2 class="panel-title">六、KDJ 金叉</h2>
+        <span class="tag bull">K 线上穿 D 线 · 短线反弹信号</span>
+      </div>
+      <div class="panel-body">
+        <div class="chart-card">
+          <div class="chart-title"><span>图例：低位区 K 线向上穿过 D 线，J 线率先上冲</span><span class="chart-note">重点看 20 / 80 区间</span></div>
+          <svg id="chart-kdj" viewBox="0 0 760 500" role="img" aria-label="KDJ金叉图解"></svg>
+        </div>
+        <div class="explain">
+          <div class="info-box"><h3><span class="number">1</span>它是什么？</h3><p>KDJ 金叉通常指 K 线从下方向上穿过 D 线，J 线往往反应更快、波动更大。它偏向短线指标，常用于观察超跌后的反弹启动。</p></div>
+          <div class="info-box"><h3><span class="number">2</span>低位金叉更有意义</h3><p>KDJ 的数值通常在 0 到 100 之间观察。20 以下属于低位或超卖区，低位金叉代表空方动能释放后多方开始反击；80 以上属于高位或超买区，高位金叉反而可能只是强势震荡，不宜简单追涨。</p></div>
+          <div class="info-box"><h3><span class="number">3</span>识别条件</h3><ul class="checklist"><li>K 线要从下向上穿过 D 线，最好发生在 20 附近或 20 以下。</li><li>J 线快速上行可以增强短线反弹感，但 J 线太敏感，不能单独使用。</li><li>价格最好同时出现止跌K线、放量反弹或突破短期均线。</li><li>强下跌趋势中，KDJ 低位金叉可能连续失败，必须设置确认条件。</li></ul></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="summary" class="wrap">
+      <h2 class="section-title">速记：六个信号的核心区别</h2>
+      <p class="lead">K线形态偏向观察“价格行为”，MACD 与 KDJ 偏向观察“指标交叉”。不要只看到名字就判断买卖，要先看位置、结构、确认和市场环境。</p>
+      <div class="compare">
+        <div class="compare-card"><h3>射击之星</h3><p>上涨末端冲高失败。重点看单根K线的长上影、小实体、低位收盘，以及后一根是否确认下跌。</p><div class="pill-row"><span class="pill">单K线</span><span class="pill">长上影</span><span class="pill">看跌警告</span></div></div>
+        <div class="compare-card"><h3>早晨之星</h3><p>下跌末端从恐慌到犹豫再到反攻。重点看第三根阳线能不能有效收复第一根阴线的半数以上。</p><div class="pill-row"><span class="pill">三K线</span><span class="pill">底部反转</span><span class="pill">看涨确认</span></div></div>
+        <div class="compare-card"><h3>乌云盖顶</h3><p>上涨末端高开低走。重点看第二根阴线是否高开，并且收盘跌破前一根阳线实体中点。</p><div class="pill-row"><span class="pill">双K线</span><span class="pill">高开低走</span><span class="pill">看跌反转</span></div></div>
+        <div class="compare-card"><h3>孕线</h3><p>原趋势突然停顿。重点看第二根小实体是否被第一根长实体包住，再结合趋势判断偏看涨还是偏看跌。</p><div class="pill-row"><span class="pill">双K线</span><span class="pill">母子结构</span><span class="pill">等待确认</span></div></div>
+        <div class="compare-card"><h3>MACD 金叉</h3><p>DIF 从下向上穿过 DEA。重点看金叉发生在零轴下、零轴附近还是零轴上，以及柱状图是否同步转强。</p><div class="pill-row"><span class="pill">趋势动能</span><span class="pill">DIF 上穿 DEA</span><span class="pill">看零轴</span></div></div>
+        <div class="compare-card"><h3>KDJ 金叉</h3><p>K 线从下向上穿过 D 线。重点看是否在低位区发生，低位金叉比高位金叉更有反弹参考价值。</p><div class="pill-row"><span class="pill">短线指标</span><span class="pill">K 上穿 D</span><span class="pill">看 20/80</span></div></div>
+      </div>
+
+      <div class="formula">
+        <h2>实战识别顺序</h2>
+        <p style="margin:0;color:#cbd5e1;line-height:1.8">不要先背名字，先按下面四步检查。只有四步都成立，形态才有讨论价值。</p>
+        <div class="formula-grid">
+          <div class="formula-item"><b>1. 先看位置</b><span>顶部形态必须在上涨后；底部形态必须在下跌后。没有趋势背景，信号质量会大幅下降。</span></div>
+          <div class="formula-item"><b>2. 再看结构</b><span>实体、影线、跳空、收盘位置必须符合形态定义，不要只凭“看起来有点像”。</span></div>
+          <div class="formula-item"><b>3. 等待确认</b><span>射击之星、乌云盖顶后续若继续收阴；早晨之星后续若站稳第三根阳线，可信度更高。</span></div>
+          <div class="formula-item"><b>4. 配合环境</b><span>结合压力位、支撑位、成交量、均线和大盘环境。单一K线形态不应单独作为交易依据。</span></div>
+          <div class="formula-item"><b>口诀：射击之星</b><span>上涨冲高被打回，长上影是压力留下的痕迹。</span></div>
+          <div class="formula-item"><b>口诀：乌云盖顶</b><span>高开本该更强，却收进昨日阳线一半以下，说明多头失守。</span></div>
+          <div class="formula-item"><b>口诀：孕线</b><span>大K线之后突然缩成小K线，说明原来的单边力量开始犹豫。</span></div>
+          <div class="formula-item"><b>口诀：MACD 金叉</b><span>DIF 上穿 DEA 是动能转强；零轴附近或上方的金叉更值得重视。</span></div>
+          <div class="formula-item"><b>口诀：KDJ 金叉</b><span>低位 K 上穿 D，短线反弹味道更浓；高位金叉不要盲目追。</span></div>
+        </div>
+      </div>
+      <p class="footnote">说明：本网页用于K线形态教学，不构成投资建议。图例为标准化教学图，并按照真实OHLC逻辑绘制。</p>
+    </section>
+  </main>
+
 <script>
 (function(){
-const RED='#e33434', GREEN='#0f9f73', BLUE='#2563eb', ORANGE='#f59e0b', PURPLE='#7c3aed', MUTED='#64748b', GRID='#e2e8f0';
-function E(n,a,p){const e=document.createElementNS('http://www.w3.org/2000/svg',n);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e}
-function T(svg,x,y,txt,attrs={}){const e=E('text',Object.assign({x,y,fill:attrs.fill||'#334155','font-size':attrs.size||13,'font-weight':attrs.weight||700,class:'svg-text'},attrs),svg);e.textContent=txt;return e}
-function grid(svg,a){E('rect',{x:a.x,y:a.y,width:a.w,height:a.h,rx:14,fill:'#fff',stroke:GRID},svg);for(let i=1;i<5;i++)E('line',{x1:a.x,y1:a.y+a.h*i/5,x2:a.x+a.w,y2:a.y+a.h*i/5,stroke:'#eef2f7'},svg);for(let i=1;i<8;i++)E('line',{x1:a.x+a.w*i/8,y1:a.y,x2:a.x+a.w*i/8,y2:a.y+a.h,stroke:'#f6f8fb'},svg)}
-function candle(svg,x,y,w,o,c,h,l,scale){const col=c>=o?RED:GREEN;const yO=scale(o),yC=scale(c),yH=scale(h),yL=scale(l);E('line',{x1:x,y1:yH,x2:x,y2:yL,stroke:'#475569','stroke-width':2},svg);E('rect',{x:x-w/2,y:Math.min(yO,yC),width:w,height:Math.max(2,Math.abs(yO-yC)),rx:3,fill:col},svg)}
-function drawCandles(id,data,opts={}){const svg=document.getElementById(id);if(!svg)return;svg.innerHTML='';const area={x:54,y:48,w:650,h:290};grid(svg,area);
-const ds=data.map(d=>Array.isArray(d)?{o:d[0],c:d[1],h:d[2],l:d[3],label:d[4],labelColor:d[5]}:d);
-const vals=ds.flatMap(d=>[d.o,d.c,d.h,d.l]);let min=Math.min(...vals),max=Math.max(...vals);const pad=(max-min)*.18||1;min-=pad;max+=pad;const sy=v=>area.y+area.h-(v-min)/(max-min)*area.h;const step=area.w/(ds.length+1);ds.forEach((d,i)=>{const x=area.x+step*(i+1);candle(svg,x,0,28,d.o,d.c,d.h,d.l,sy);if(d.label)T(svg,x,area.y+area.h+28,d.label,{fill:d.labelColor||'#64748b',size:12,weight:800,'text-anchor':'middle'});});if(opts.title)T(svg,54,28,opts.title,{size:16,weight:900,fill:'#0f172a'});if(opts.caption)T(svg,54,392,opts.caption,{size:13,weight:700,fill:MUTED});if(opts.mid){const d=ds[opts.mid.index];const m=(d.o+d.c)/2;E('line',{x1:area.x+step*(opts.mid.index+1)-30,y1:sy(m),x2:area.x+step*(opts.mid.to+1)+30,y2:sy(m),stroke:'#f59e0b','stroke-width':2,'stroke-dasharray':'5 5'},svg);T(svg,area.x+step*(opts.mid.to+1)+34,sy(m)+4,opts.mid.label,{fill:'#b45309',size:12,weight:900});}if(opts.ann)opts.ann.forEach(a=>{T(svg,a.x,a.y,a.text,{fill:a.color||'#111827',size:13,weight:900});E('line',{x1:a.x,y1:a.y+8,x2:a.x2,y2:a.y2,stroke:a.color||'#111827','stroke-width':2,'stroke-dasharray':'4 4'},svg);});}
-function drawHarami(){const svg=document.getElementById('chart-harami');svg.innerHTML='';function mini(x,title,bull){const area={x,y:56,w:320,h:260};grid(svg,area);const data=bull?[[112,96,115,94],[99,104,106,98]]:[[96,112,114,94],[108,103,110,102]];const vals=data.flatMap(d=>d);let min=Math.min(...vals)-4,max=Math.max(...vals)+4;const sy=v=>area.y+area.h-(v-min)/(max-min)*area.h;T(svg,x+6,30,title,{size:16,weight:900,fill:bull?'#b91c1c':'#047857'});candle(svg,x+110,0,46,data[0][0],data[0][1],data[0][2],data[0][3],sy);candle(svg,x+215,0,36,data[1][0],data[1][1],data[1][2],data[1][3],sy);E('rect',{x:x+170,y:Math.min(sy(data[0][0]),sy(data[0][1])),width:90,height:Math.abs(sy(data[0][0])-sy(data[0][1])),rx:8,fill:'none',stroke:'#f59e0b','stroke-width':2,'stroke-dasharray':'5 5'},svg);T(svg,x+38,350,'第二根小实体被第一根大实体包含',{fill:MUTED,size:13,weight:800});}
-mini(42,'看涨孕线：下跌后犹豫',true);mini(400,'看跌孕线：上涨后犹豫',false);}
-function drawMACD(){const svg=document.getElementById('chart-macd');svg.innerHTML='';const price={x:54,y:42,w:650,h:160}, ind={x:54,y:245,w:650,h:130};grid(svg,price);grid(svg,ind);const data=[[118,115,119,113],[115,112,116,110],[112,109,113,108],[109,110,111,106],[110,113,114,109],[113,116,117,112],[116,120,121,115],[120,123,124,119],[123,126,127,122]];const vals=data.flatMap(d=>d);let min=Math.min(...vals)-3,max=Math.max(...vals)+3;const sy=v=>price.y+price.h-(v-min)/(max-min)*price.h;const step=price.w/(data.length+1);data.forEach((d,i)=>candle(svg,price.x+step*(i+1),0,24,d[0],d[1],d[2],d[3],sy));const zero=ind.y+ind.h*.56;E('line',{x1:ind.x,y1:zero,x2:ind.x+ind.w,y2:zero,stroke:'#94a3b8','stroke-width':1.5},svg);const dif=[-34,-28,-22,-15,-8,2,10,18,26], dea=[-24,-24,-22,-18,-13,-7,0,9,18];const xs=dif.map((_,i)=>ind.x+step*(i+1));const yy=v=>zero-v*1.55;dif.forEach((v,i)=>{const hist=v-dea[i];E('rect',{x:xs[i]-10,y:hist>=0?yy(hist):zero,width:20,height:Math.abs(yy(hist)-zero),rx:3,fill:hist>=0?RED:GREEN,opacity:.75},svg)});function path(arr){return arr.map((v,i)=>(i?'L':'M')+' '+xs[i]+' '+yy(v)).join(' ')}E('path',{d:path(dif),fill:'none',stroke:BLUE,'stroke-width':3,'stroke-linecap':'round'},svg);E('path',{d:path(dea),fill:'none',stroke:ORANGE,'stroke-width':3,'stroke-linecap':'round'},svg);T(svg,58,225,'MACD 副图：DIF 快线从下向上穿过 DEA 慢线，绿柱缩短并转红',{size:13,fill:MUTED});T(svg,xs[5]-30,yy(dif[5])-18,'金叉',{fill:'#b91c1c',size:15,weight:900});E('circle',{cx:xs[5],cy:yy(dif[5]),r:7,fill:'#fff',stroke:'#b91c1c','stroke-width':3},svg)}
-function drawKDJ(){const svg=document.getElementById('chart-kdj');svg.innerHTML='';const price={x:54,y:42,w:650,h:150}, ind={x:54,y:240,w:650,h:145};grid(svg,price);grid(svg,ind);const data=[[115,111,116,110],[111,108,112,107],[108,106,109,104],[106,107,108,103],[107,111,112,106],[111,115,116,110],[115,119,120,114],[119,122,123,118]];const vals=data.flatMap(d=>d);let min=Math.min(...vals)-3,max=Math.max(...vals)+3;const sy=v=>price.y+price.h-(v-min)/(max-min)*price.h;const step=price.w/(data.length+1);data.forEach((d,i)=>candle(svg,price.x+step*(i+1),0,24,d[0],d[1],d[2],d[3],sy));const yv=v=>ind.y+ind.h-(v/100)*ind.h;[20,50,80].forEach(v=>{E('line',{x1:ind.x,y1:yv(v),x2:ind.x+ind.w,y2:yv(v),stroke:v==50?'#dbeafe':'#fde68a','stroke-width':1.5,'stroke-dasharray':'5 5'},svg);T(svg,ind.x+ind.w+7,yv(v)+4,String(v),{fill:MUTED,size:11})});const K=[18,16,21,28,42,58,70,76],D=[24,21,20,24,33,46,59,68],J=[6,8,24,50,72,82,92,88];const xs=K.map((_,i)=>ind.x+step*(i+1));function path(arr){return arr.map((v,i)=>(i?'L':'M')+' '+xs[i]+' '+yv(v)).join(' ')}E('path',{d:path(K),fill:'none',stroke:BLUE,'stroke-width':3,'stroke-linecap':'round'},svg);E('path',{d:path(D),fill:'none',stroke:ORANGE,'stroke-width':3,'stroke-linecap':'round'},svg);E('path',{d:path(J),fill:'none',stroke:PURPLE,'stroke-width':2.6,'stroke-linecap':'round'},svg);T(svg,xs[3]-34,yv(K[3])-20,'K上穿D：金叉',{fill:'#b91c1c',size:14,weight:900});E('circle',{cx:xs[3],cy:yv(K[3]),r:7,fill:'#fff',stroke:'#b91c1c','stroke-width':3},svg);T(svg,58,222,'KDJ 副图：低位金叉通常看反弹，中位金叉看转强，高位金叉要防追高或钝化',{fill:MUTED,size:13});}
-function drawPassivation(){const svg=document.getElementById('chart-passivation');svg.innerHTML='';function one(x,up){const a={x,y:26,w:334,h:372};E('rect',{x:a.x,y:a.y,width:a.w,height:a.h,rx:18,fill:'#fff',stroke:GRID},svg);T(svg,x+16,52,up?'高位钝化':'低位钝化',{size:17,weight:900,fill:up?'#b91c1c':'#047857'});T(svg,x+16,73,up?'KDJ在80上方，但价格继续涨':'KDJ在20下方，但价格继续跌',{size:12,fill:MUTED});const price={x:x+18,y:92,w:298,h:120},ind={x:x+18,y:244,w:298,h:112};grid(svg,price);grid(svg,ind);const data=up?[[100,104,99,105],[105,109,104,110],[110,114,109,115],[115,118,113,119],[119,123,118,124],[124,127,123,128],[128,132,127,133]]:[[133,129,134,128],[129,124,130,123],[124,120,125,119],[120,116,121,115],[116,111,117,110],[111,106,112,105],[106,101,107,100]];const vals=data.flatMap(d=>d);let min=Math.min(...vals)-2,max=Math.max(...vals)+2;const sy=v=>price.y+price.h-(v-min)/(max-min)*price.h;const step=price.w/(data.length+1);data.forEach((d,i)=>candle(svg,price.x+step*(i+1),0,20,d[0],d[1],d[2],d[3],sy));const yv=v=>ind.y+ind.h-(v/100)*ind.h;[20,80].forEach(v=>{E('line',{x1:ind.x,y1:yv(v),x2:ind.x+ind.w,y2:yv(v),stroke:'#fbbf24','stroke-dasharray':'5 5'},svg);T(svg,ind.x+ind.w+4,yv(v)+4,String(v),{fill:MUTED,size:11})});const K=up?[78,84,90,88,93,91,89]:[24,18,14,12,16,11,10];const D=up?[73,79,84,86,88,88,87]:[30,24,19,16,15,13,12];const J=up?[88,96,101,92,99,94,90]:[12,8,5,6,20,7,4];const xs=K.map((_,i)=>ind.x+step*(i+1));function path(arr){return arr.map((v,i)=>(i?'L':'M')+' '+xs[i]+' '+yv(v)).join(' ')}E('path',{d:path(K),fill:'none',stroke:BLUE,'stroke-width':3},svg);E('path',{d:path(D),fill:'none',stroke:ORANGE,'stroke-width':3},svg);E('path',{d:path(J),fill:'none',stroke:PURPLE,'stroke-width':2.4},svg);T(svg,x+26,386,up?'不能只因超买就做空':'不能只因超卖就抄底',{size:13,weight:900,fill:up?'#b91c1c':'#047857'});}one(34,true);one(392,false);}
-function drawHero(){drawPassivation();const h=document.getElementById('heroChart');const clone=document.getElementById('chart-passivation'); if(h&&clone) h.innerHTML=clone.innerHTML;}
+  const RED = getComputedStyle(document.documentElement).getPropertyValue('--red').trim();
+  const GREEN = getComputedStyle(document.documentElement).getPropertyValue('--green').trim();
+  const GRID = '#e2e8f0';
+  const TEXT = '#475569';
+  const MUTED = '#94a3b8';
+  const GOLD = getComputedStyle(document.documentElement).getPropertyValue('--gold').trim();
+  const BLUE = getComputedStyle(document.documentElement).getPropertyValue('--blue').trim();
+  const PURPLE = getComputedStyle(document.documentElement).getPropertyValue('--purple').trim();
 
-drawCandles('chart-shooting',[[100,104,105,99],[104,108,109,103],[108,112,113,107],[112,116,117,111],[118,117,128,116],[116,112,117,111]],{title:'射击之星：上涨后冲高失败',caption:'长上影 + 小实体 + 上涨末端，后一根继续走弱更像确认。',ann:[{x:470,y:75,text:'长上影',x2:505,y2:85,color:'#b45309'},{x:575,y:180,text:'确认走弱',x2:600,y2:225,color:'#047857'}]});
-drawCandles('chart-morning',[[124,120,125,119],[120,116,121,115],[116,109,117,108],[106,105,108,104],[106,115,116,105]],{title:'早晨之星：长阴 → 星线 → 强阳',caption:'第三根阳线收复第一根阴线实体一半以上，反转含义更清楚。',mid:{index:2,to:4,label:'实体中点'}});
-drawCandles('chart-dark',[[100,104,105,99],[104,108,109,103],[108,113,114,107],[113,121,122,112],[123,115,124,114],[115,111,116,110]],{title:'乌云盖顶：高开低走，收盘跌破前阳中点',caption:'第二根阴线越深入前一根阳线实体，看跌意味越强。',mid:{index:3,to:4,label:'前阳中点'}});
-drawHarami();drawMACD();drawKDJ();drawPassivation();drawHero();
+  function el(name, attrs = {}, parent){
+    const node = document.createElementNS('http://www.w3.org/2000/svg', name);
+    for(const [k,v] of Object.entries(attrs)) node.setAttribute(k, v);
+    if(parent) parent.appendChild(node);
+    return node;
+  }
+  function round(n){ return Math.round(n*100)/100; }
+
+  function drawChart(svgId, candles, opts){
+    const svg = document.getElementById(svgId);
+    const W = 760, H = 430;
+    const pad = {l:58, r:34, t:40, b:58};
+    const cw = W - pad.l - pad.r;
+    const ch = H - pad.t - pad.b;
+    const highs = candles.map(d=>d.h), lows = candles.map(d=>d.l);
+    let min = Math.min(...lows), max = Math.max(...highs);
+    const extra = (max-min)*0.14 || 1;
+    min -= extra; max += extra;
+    const y = p => pad.t + (max - p)/(max-min)*ch;
+    const x = i => pad.l + (i+.5) * cw / candles.length;
+    const step = cw / candles.length;
+    const bodyW = Math.min(34, step * .48);
+    svg.innerHTML = '';
+
+    const defs = el('defs',{},svg);
+    const marker = el('marker',{id:svgId+'-arrow',viewBox:'0 0 10 10',refX:'8',refY:'5',markerWidth:'7',markerHeight:'7',orient:'auto-start-reverse'},defs);
+    el('path',{d:'M0,0 L10,5 L0,10 Z',fill:opts.arrowColor || '#64748b'},marker);
+    const glow = el('filter',{id:svgId+'-glow',x:'-50%',y:'-50%',width:'200%',height:'200%'},defs);
+    el('feGaussianBlur',{stdDeviation:'4',result:'coloredBlur'},glow);
+    const merge = el('feMerge',{},glow); el('feMergeNode',{in:'coloredBlur'},merge); el('feMergeNode',{in:'SourceGraphic'},merge);
+
+    el('rect',{x:0,y:0,width:W,height:H,rx:24,fill:'#ffffff'},svg);
+    for(let i=0;i<5;i++){
+      const yy = pad.t + i*ch/4;
+      el('line',{x1:pad.l,y1:yy,x2:W-pad.r,y2:yy,stroke:GRID,'stroke-width':1},svg);
+      const price = round(max - i*(max-min)/4);
+      el('text',{x:pad.l-12,y:yy+5,'text-anchor':'end',fill:MUTED,'font-size':12,class:'svg-text'},svg).textContent = price;
+    }
+    el('line',{x1:pad.l,y1:H-pad.b,x2:W-pad.r,y2:H-pad.b,stroke:'#cbd5e1','stroke-width':1.2},svg);
+
+    if(opts.trend === 'up'){
+      el('path',{d:`M${x(0)-14} ${y(candles[0].l)-10} C${x(2)} ${y(candles[2].l)-26}, ${x(3.4)} ${y(candles[3].l)-28}, ${x(4.55)} ${y(candles[4].l)-42}`,fill:'none',stroke:BLUE,'stroke-width':3,'stroke-linecap':'round','marker-end':`url(#${svgId}-arrow)`,opacity:.9},svg);
+      el('text',{x:x(1.5),y:y(candles[1].l)-44,fill:BLUE,'font-size':14,'font-weight':800,class:'svg-text'},svg).textContent='上涨背景';
+    }
+    if(opts.trend === 'down'){
+      el('path',{d:`M${x(0)-10} ${y(candles[0].h)+4} C${x(1.8)} ${y(candles[2].h)+36}, ${x(3.2)} ${y(candles[3].h)+38}, ${x(4.6)} ${y(candles[4].h)+48}`,fill:'none',stroke:BLUE,'stroke-width':3,'stroke-linecap':'round','marker-end':`url(#${svgId}-arrow)`,opacity:.9},svg);
+      el('text',{x:x(1.2),y:y(candles[1].h)+62,fill:BLUE,'font-size':14,'font-weight':800,class:'svg-text'},svg).textContent='下跌背景';
+    }
+
+    if(opts.highlight){
+      for(const h of opts.highlight){
+        const start = x(h.from) - step/2 + 4;
+        const end = x(h.to) + step/2 - 4;
+        el('rect',{x:start,y:pad.t+6,width:end-start,height:ch-10,rx:18,fill:h.fill || 'rgba(245,158,11,.09)',stroke:h.stroke || 'rgba(245,158,11,.45)','stroke-width':1.4,'stroke-dasharray':'6 5'},svg);
+      }
+    }
+
+    if(opts.midLine){
+      const i = opts.midLine.index;
+      const d = candles[i];
+      const mid = (d.o+d.c)/2;
+      el('line',{x1:x(i)-step*.46,y1:y(mid),x2:x(opts.midLine.toIndex ?? i+1)+step*.46,y2:y(mid),stroke:GOLD,'stroke-width':2.5,'stroke-dasharray':'7 5'},svg);
+      el('text',{x:x(i)-step*.43,y:y(mid)-8,fill:'#b45309','font-size':13,'font-weight':900,class:'svg-text'},svg).textContent=opts.midLine.label || '实体中点';
+    }
+
+    candles.forEach((d,i)=>{
+      const cx = x(i);
+      const color = d.c >= d.o ? RED : GREEN;
+      el('line',{x1:cx,y1:y(d.h),x2:cx,y2:y(d.l),stroke:'#334155','stroke-width':2.6,'stroke-linecap':'round'},svg);
+      const top = Math.min(y(d.o), y(d.c));
+      const bottom = Math.max(y(d.o), y(d.c));
+      const bh = Math.max(3, bottom-top);
+      el('rect',{x:cx-bodyW/2,y:top,width:bodyW,height:bh,rx:4,fill:color,stroke:'#0f172a','stroke-width':.8,opacity:.96},svg);
+      if(d.label){
+        el('text',{x:cx,y:H-28,'text-anchor':'middle',fill:d.labelColor || TEXT,'font-size':13,'font-weight':900,class:'svg-text'},svg).textContent=d.label;
+      }
+    });
+
+    if(opts.annotations){
+      for(const a of opts.annotations){
+        const ax = typeof a.x === 'number' ? x(a.x) : a.xRaw;
+        const ay = typeof a.price === 'number' ? y(a.price) : a.yRaw;
+        if(a.lineTo){
+          const tx = typeof a.lineTo.x === 'number' ? x(a.lineTo.x) : a.lineTo.xRaw;
+          const ty = typeof a.lineTo.price === 'number' ? y(a.lineTo.price) : a.lineTo.yRaw;
+          el('line',{x1:ax,y1:ay,x2:tx,y2:ty,stroke:a.color || '#64748b','stroke-width':2,'marker-end':`url(#${svgId}-arrow)`},svg);
+        }
+        const g = el('g',{},svg);
+        const w = a.width || 178, h = a.height || 40;
+        const bx = ax - (a.align === 'right' ? w : a.align === 'center' ? w/2 : 0);
+        const by = ay - h;
+        el('rect',{x:bx,y:by,width:w,height:h,rx:12,fill:a.bg || '#0f172a',opacity:.94},g);
+        el('text',{x:bx+12,y:by+25,fill:a.textColor || '#fff','font-size':13,'font-weight':900,class:'svg-text'},g).textContent=a.text;
+      }
+    }
+
+    if(opts.gap){
+      for(const g of opts.gap){
+        const gx1 = x(g.from)+bodyW/2+4;
+        const gx2 = x(g.to)-bodyW/2-4;
+        el('path',{d:`M${gx1} ${y(g.p1)} L${gx2} ${y(g.p2)}`,stroke:PURPLE,'stroke-width':2.5,'stroke-dasharray':'5 4'},svg);
+        el('text',{x:(gx1+gx2)/2,y:Math.min(y(g.p1),y(g.p2))-8,'text-anchor':'middle',fill:PURPLE,'font-size':13,'font-weight':900,class:'svg-text'},svg).textContent=g.label;
+      }
+    }
+
+    if(opts.caption){
+      el('text',{x:pad.l,y:H-12,fill:MUTED,'font-size':12,class:'svg-text'},svg).textContent=opts.caption;
+    }
+  }
+
+  const shooting = [
+    {o:100,c:104,h:105,l:99,label:'1'},
+    {o:104,c:108,h:109,l:103,label:'2'},
+    {o:107.6,c:111,h:112,l:106.8,label:'3'},
+    {o:111,c:114.2,h:115,l:110.4,label:'4'},
+    {o:114,c:117.2,h:118,l:113.1,label:'5'},
+    {o:118.2,c:117.4,h:128,l:116.9,label:'射击之星',labelColor:'#b45309'},
+    {o:116.8,c:112.2,h:117,l:111.4,label:'确认'}
+  ];
+
+  drawChart('chart-shooting', shooting, {
+    trend:'up',
+    highlight:[{from:5,to:5}],
+    annotations:[
+      {x:5,price:128,text:'长上影：冲高失败',align:'center',width:150,bg:'#b45309',lineTo:{x:5,price:124.6},color:'#b45309'},
+      {x:6.35,price:113.4,text:'确认K线继续走弱',align:'right',width:158,bg:'#047857',lineTo:{x:6,price:112.2},color:'#047857'}
+    ],
+    caption:'标准特征：上涨后，小实体靠近低位，上影线明显长于实体。'
+  });
+
+  const morning = [
+    {o:124,c:121,h:125,l:120,label:'1'},
+    {o:121,c:117,h:122,l:116,label:'2'},
+    {o:117,c:112,h:118,l:111,label:'3'},
+    {o:112,c:107,h:113,l:106,label:'4'},
+    {o:118,c:109,h:119,l:108.3,label:'长阴'},
+    {o:106.4,c:105.8,h:107.4,l:104.7,label:'星线',labelColor:'#7c3aed'},
+    {o:106.7,c:114.8,h:115.5,l:106.2,label:'长阳'}
+  ];
+
+  drawChart('chart-morning', morning, {
+    trend:'down',
+    highlight:[{from:4,to:6,fill:'rgba(224,59,59,.07)',stroke:'rgba(224,59,59,.35)'}],
+    midLine:{index:4,toIndex:6,label:'第一根实体中点'},
+    gap:[{from:4,to:5,p1:109,p2:106.4,label:'低位分离'}, {from:5,to:6,p1:105.8,p2:106.7,label:'反攻'}],
+    annotations:[
+      {x:5.6,price:106.2,text:'星线：空方动能停顿',align:'center',width:178,bg:'#6d28d9',lineTo:{x:5,price:105.8},color:'#6d28d9'},
+      {x:6.9,price:116.5,text:'阳线收复半数以上',align:'right',width:172,bg:'#b91c1c',lineTo:{x:6,price:114.8},color:'#b91c1c'}
+    ],
+    caption:'标准特征：下跌后出现“长阴—小星线—强阳线”的三段式反转。'
+  });
+
+  const dark = [
+    {o:100,c:103,h:104,l:99,label:'1'},
+    {o:103,c:106,h:107,l:102,label:'2'},
+    {o:106,c:109,h:110,l:105,label:'3'},
+    {o:109,c:112,h:113,l:108.5,label:'4'},
+    {o:112,c:120,h:121,l:111.4,label:'长阳'},
+    {o:122.3,c:115.1,h:123,l:114.3,label:'乌云',labelColor:'#b45309'},
+    {o:114.8,c:111.8,h:115.2,l:110.9,label:'确认'}
+  ];
+
+  drawChart('chart-dark', dark, {
+    trend:'up',
+    highlight:[{from:4,to:5}],
+    midLine:{index:4,toIndex:5,label:'前一根阳线实体中点'},
+    gap:[{from:4,to:5,p1:121,p2:122.3,label:'高开'}],
+    annotations:[
+      {x:5.15,price:122.9,text:'第二根先高开',align:'center',width:134,bg:'#6d28d9',lineTo:{x:5,price:122.3},color:'#6d28d9'},
+      {x:6.25,price:115.1,text:'收盘跌破实体中点',align:'right',width:170,bg:'#047857',lineTo:{x:5,price:115.1},color:'#047857'}
+    ],
+    caption:'标准特征：上涨后，第二根高开低走，并收进前一根阳线实体一半以下。'
+  });
+
+  function drawCandleMini(g, x0, y0, w, h, candles, opts={}){
+    const highs = candles.map(d=>d.h), lows = candles.map(d=>d.l);
+    let min = Math.min(...lows), max = Math.max(...highs);
+    const extra = (max-min)*0.16 || 1;
+    min -= extra; max += extra;
+    const y = p => y0 + (max - p)/(max-min)*h;
+    const x = i => x0 + (i+.5) * w / candles.length;
+    const step = w / candles.length;
+    const bodyW = Math.min(24, step*.48);
+
+    el('rect',{x:x0,y:y0,width:w,height:h,rx:18,fill:'#ffffff',stroke:'#e2e8f0','stroke-width':1.2},g);
+    for(let i=0;i<4;i++){
+      const yy = y0 + i*h/3;
+      el('line',{x1:x0+16,y1:yy,x2:x0+w-16,y2:yy,stroke:'#edf2f7','stroke-width':1},g);
+    }
+    el('text',{x:x0+16,y:y0+24,fill:opts.titleColor || '#0f172a','font-size':15,'font-weight':900,class:'svg-text'},g).textContent = opts.title || '';
+    el('text',{x:x0+w-16,y:y0+24,'text-anchor':'end',fill:'#94a3b8','font-size':12,'font-weight':700,class:'svg-text'},g).textContent = opts.sub || '';
+
+    if(opts.highlight){
+      const s = x(opts.highlight.from)-step/2+5, e = x(opts.highlight.to)+step/2-5;
+      el('rect',{x:s,y:y0+38,width:e-s,height:h-52,rx:14,fill:opts.highlight.fill || 'rgba(245,158,11,.08)',stroke:opts.highlight.stroke || 'rgba(245,158,11,.55)','stroke-width':1.5,'stroke-dasharray':'6 5'},g);
+    }
+    if(opts.trend === 'up'){
+      el('path',{d:`M${x(0)-8} ${y(candles[0].l)-3} C${x(1.2)} ${y(candles[1].l)-22}, ${x(2.7)} ${y(candles[3].l)-28}, ${x(3.8)} ${y(candles[4].l)-36}`,fill:'none',stroke:BLUE,'stroke-width':2.6,'marker-end':`url(#chart-harami-arrow)`,'stroke-linecap':'round'},g);
+    }
+    if(opts.trend === 'down'){
+      el('path',{d:`M${x(0)-8} ${y(candles[0].h)+4} C${x(1.1)} ${y(candles[1].h)+28}, ${x(2.8)} ${y(candles[3].h)+30}, ${x(3.8)} ${y(candles[4].h)+40}`,fill:'none',stroke:BLUE,'stroke-width':2.6,'marker-end':`url(#chart-harami-arrow)`,'stroke-linecap':'round'},g);
+    }
+    candles.forEach((d,i)=>{
+      const cx = x(i);
+      const color = d.c >= d.o ? RED : GREEN;
+      el('line',{x1:cx,y1:y(d.h),x2:cx,y2:y(d.l),stroke:'#334155','stroke-width':2.2,'stroke-linecap':'round'},g);
+      const top = Math.min(y(d.o), y(d.c));
+      const bottom = Math.max(y(d.o), y(d.c));
+      el('rect',{x:cx-bodyW/2,y:top,width:bodyW,height:Math.max(3,bottom-top),rx:4,fill:color,stroke:'#0f172a','stroke-width':.75},g);
+      if(d.label){
+        el('text',{x:cx,y:y0+h-15,'text-anchor':'middle',fill:d.labelColor || '#475569','font-size':12,'font-weight':900,class:'svg-text'},g).textContent=d.label;
+      }
+    });
+    if(opts.note){
+      el('rect',{x:x0+22,y:y0+h-62,width:w-44,height:34,rx:12,fill:opts.noteBg || '#0f172a',opacity:.92},g);
+      el('text',{x:x0+w/2,y:y0+h-40,'text-anchor':'middle',fill:'#fff','font-size':13,'font-weight':900,class:'svg-text'},g).textContent=opts.note;
+    }
+  }
+
+  function drawHaramiChart(){
+    const svg = document.getElementById('chart-harami');
+    if(!svg) return;
+    svg.innerHTML = '';
+    const W=760,H=460;
+    const defs = el('defs',{},svg);
+    const marker = el('marker',{id:'chart-harami-arrow',viewBox:'0 0 10 10',refX:'8',refY:'5',markerWidth:'7',markerHeight:'7',orient:'auto-start-reverse'},defs);
+    el('path',{d:'M0,0 L10,5 L0,10 Z',fill:BLUE},marker);
+    const grad = el('linearGradient',{id:'harami-bg',x1:'0',x2:'1',y1:'0',y2:'1'},defs);
+    el('stop',{offset:'0%','stop-color':'#ffffff'},grad);
+    el('stop',{offset:'100%','stop-color':'#f8fafc'},grad);
+    el('rect',{x:0,y:0,width:W,height:H,rx:24,fill:'url(#harami-bg)'},svg);
+
+    const topBear = [
+      {o:101,c:104,h:105,l:100}, {o:104,c:107,h:108,l:103}, {o:107,c:111,h:112,l:106.6}, {o:111,c:115.5,h:116.2,l:110.8},
+      {o:115.4,c:122.5,h:123.2,l:114.6,label:'母线',labelColor:'#b91c1c'}, {o:120.8,c:118.8,h:121.6,l:118.2,label:'子线',labelColor:'#b45309'},
+      {o:118.4,c:114.1,h:119,l:113.4}
+    ];
+    const bottomBull = [
+      {o:121,c:118,h:122,l:117}, {o:118,c:114.6,h:119,l:114}, {o:114.6,c:111.2,h:115.2,l:110.5}, {o:111.2,c:107.5,h:112,l:106.6},
+      {o:107.3,c:99.8,h:108.2,l:98.9,label:'母线',labelColor:'#047857'}, {o:101.3,c:103.1,h:104.0,l:100.7,label:'子线',labelColor:'#b45309'},
+      {o:103.5,c:108.2,h:109,l:103.2}
+    ];
+
+    drawCandleMini(svg, 38, 58, 326, 318, topBear, {
+      title:'上涨后的看跌孕线', sub:'长阳包住小实体', trend:'up',
+      highlight:{from:4,to:5,fill:'rgba(245,158,11,.08)',stroke:'rgba(245,158,11,.65)'},
+      note:'高位从强势推进变成犹豫，需等后续走弱确认', noteBg:'#b45309'
+    });
+    drawCandleMini(svg, 396, 58, 326, 318, bottomBull, {
+      title:'下跌后的看涨孕线', sub:'长阴包住小实体', trend:'down',
+      highlight:{from:4,to:5,fill:'rgba(224,59,59,.06)',stroke:'rgba(224,59,59,.45)'},
+      note:'低位从恐慌杀跌变成停顿，需等后续反攻确认', noteBg:'#b91c1c'
+    });
+
+    el('line',{x1:380,y1:66,x2:380,y2:376,stroke:'#e2e8f0','stroke-width':1.4,'stroke-dasharray':'6 6'},svg);
+    el('rect',{x:46,y:398,width:668,height:38,rx:15,fill:'#0f172a',opacity:.94},svg);
+    el('text',{x:380,y:422,'text-anchor':'middle',fill:'#e2e8f0','font-size':14,'font-weight':900,class:'svg-text'},svg).textContent='核心：第二根“小实体”收在第一根“长实体”内部，代表原趋势动能突然停顿。';
+  }
+
+  function drawPricePanel(svg, x0, y0, w, h, candles, opts={}){
+    const highs = candles.map(d=>d.h), lows = candles.map(d=>d.l);
+    let min = Math.min(...lows), max = Math.max(...highs);
+    const extra = (max-min)*0.14 || 1;
+    min -= extra; max += extra;
+    const y = p => y0 + (max-p)/(max-min)*h;
+    const x = i => x0 + (i+.5)*w/candles.length;
+    const step = w/candles.length;
+    const bodyW = Math.min(22, step*.48);
+    el('rect',{x:x0,y:y0,width:w,height:h,rx:16,fill:'#ffffff',stroke:'#e2e8f0','stroke-width':1.2},svg);
+    for(let i=0;i<4;i++){
+      const yy = y0 + i*h/3;
+      el('line',{x1:x0+16,y1:yy,x2:x0+w-16,y2:yy,stroke:'#edf2f7','stroke-width':1},svg);
+    }
+    candles.forEach((d,i)=>{
+      const cx=x(i); const color=d.c>=d.o?RED:GREEN;
+      el('line',{x1:cx,y1:y(d.h),x2:cx,y2:y(d.l),stroke:'#334155','stroke-width':2,'stroke-linecap':'round'},svg);
+      const top=Math.min(y(d.o),y(d.c)), bottom=Math.max(y(d.o),y(d.c));
+      el('rect',{x:cx-bodyW/2,y:top,width:bodyW,height:Math.max(3,bottom-top),rx:4,fill:color,stroke:'#0f172a','stroke-width':.7},svg);
+    });
+    if(opts.ma){
+      const pts = opts.ma.map((v,i)=>`${x(i)},${y(v)}`).join(' ');
+      el('polyline',{points:pts,fill:'none',stroke:GOLD,'stroke-width':2.4,'stroke-linecap':'round','stroke-linejoin':'round'},svg);
+      el('text',{x:x0+16,y:y0+23,fill:GOLD,'font-size':12,'font-weight':900,class:'svg-text'},svg).textContent='MA 短期均线';
+    }
+    return {x,y,step};
+  }
+
+  function drawMacdChart(){
+    const svg = document.getElementById('chart-macd');
+    if(!svg) return;
+    svg.innerHTML='';
+    const W=760,H=500;
+    const defs=el('defs',{},svg);
+    const marker=el('marker',{id:'chart-macd-arrow',viewBox:'0 0 10 10',refX:'8',refY:'5',markerWidth:'7',markerHeight:'7',orient:'auto-start-reverse'},defs);
+    el('path',{d:'M0,0 L10,5 L0,10 Z',fill:'#b45309'},marker);
+    const glow=el('filter',{id:'chart-macd-glow',x:'-60%',y:'-60%',width:'220%',height:'220%'},defs);
+    el('feGaussianBlur',{stdDeviation:'3',result:'blur'},glow);
+    const mg=el('feMerge',{},glow); el('feMergeNode',{in:'blur'},mg); el('feMergeNode',{in:'SourceGraphic'},mg);
+    el('rect',{x:0,y:0,width:W,height:H,rx:24,fill:'#ffffff'},svg);
+
+    const candles=[
+      {o:116,c:113,h:117,l:112},{o:113,c:110,h:114,l:109},{o:110,c:108,h:111,l:107},{o:108,c:106.5,h:109,l:105.8},
+      {o:106.4,c:107.2,h:108,l:105.6},{o:107.2,c:109.4,h:110.2,l:106.8},{o:109.2,c:111.8,h:112.6,l:108.8},{o:111.6,c:114.2,h:115,l:111.2},
+      {o:114,c:116.5,h:117.2,l:113.5},{o:116.4,c:119.2,h:120.1,l:116},{o:119.2,c:121.4,h:122.2,l:118.6},{o:121.1,c:123.4,h:124,l:120.7}
+    ];
+    const ma=[115,113,111.2,109.2,108.0,108.2,109.3,111,113,115.8,118.4,120.6];
+    drawPricePanel(svg,54,42,652,190,candles,{ma});
+    el('text',{x:70,y:64,fill:'#0f172a','font-size':14,'font-weight':900,class:'svg-text'},svg).textContent='价格主图：回落后重新抬升';
+
+    const x0=54,y0=270,w=652,h=172;
+    el('rect',{x:x0,y:y0,width:w,height:h,rx:16,fill:'#ffffff',stroke:'#e2e8f0','stroke-width':1.2},svg);
+    for(let i=0;i<5;i++){
+      const yy=y0+i*h/4;
+      el('line',{x1:x0+16,y1:yy,x2:x0+w-16,y2:yy,stroke:'#edf2f7','stroke-width':1},svg);
+    }
+    const zero=y0+h*.55;
+    el('line',{x1:x0+18,y1:zero,x2:x0+w-18,y2:zero,stroke:'#94a3b8','stroke-width':1.5,'stroke-dasharray':'5 5'},svg);
+    el('text',{x:x0+w-22,y:zero-6,'text-anchor':'end',fill:'#64748b','font-size':12,'font-weight':900,class:'svg-text'},svg).textContent='零轴';
+    const dif=[-0.92,-0.88,-0.76,-0.58,-0.45,-0.32,-0.13,0.10,0.32,0.55,0.74,0.92];
+    const dea=[-0.62,-0.68,-0.70,-0.66,-0.58,-0.43,-0.22,-0.02,0.16,0.35,0.52,0.68];
+    const hist=dif.map((v,i)=>v-dea[i]);
+    const min=-1.05,max=1.05;
+    const y=v=>y0+(max-v)/(max-min)*h;
+    const x=i=>x0+(i+.5)*w/dif.length;
+    const step=w/dif.length;
+    hist.forEach((v,i)=>{
+      const yy=y(v), z=y(0);
+      el('rect',{x:x(i)-step*.18,y:Math.min(yy,z),width:step*.36,height:Math.max(2,Math.abs(yy-z)),rx:3,fill:v>=0?RED:GREEN,opacity:.82},svg);
+    });
+    const difPts=dif.map((v,i)=>`${x(i)},${y(v)}`).join(' ');
+    const deaPts=dea.map((v,i)=>`${x(i)},${y(v)}`).join(' ');
+    el('polyline',{points:difPts,fill:'none',stroke:BLUE,'stroke-width':3,'stroke-linecap':'round','stroke-linejoin':'round'},svg);
+    el('polyline',{points:deaPts,fill:'none',stroke:GOLD,'stroke-width':3,'stroke-linecap':'round','stroke-linejoin':'round'},svg);
+    const crossX=x(6.55), crossY=y(-0.08);
+    el('circle',{cx:crossX,cy:crossY,r:10,fill:'#fff7ed',stroke:'#f59e0b','stroke-width':4,filter:'url(#chart-macd-glow)'},svg);
+    el('line',{x1:crossX+8,y1:crossY-10,x2:crossX+88,y2:crossY-66,stroke:'#b45309','stroke-width':2.2,'marker-end':'url(#chart-macd-arrow)'},svg);
+    el('rect',{x:crossX+92,y:crossY-92,width:150,height:44,rx:14,fill:'#0f172a',opacity:.94},svg);
+    el('text',{x:crossX+107,y:crossY-65,fill:'#fff','font-size':13,'font-weight':900,class:'svg-text'},svg).textContent='DIF 上穿 DEA：金叉';
+    el('text',{x:x0+18,y:y0+24,fill:BLUE,'font-size':12,'font-weight':900,class:'svg-text'},svg).textContent='DIF';
+    el('text',{x:x0+58,y:y0+24,fill:GOLD,'font-size':12,'font-weight':900,class:'svg-text'},svg).textContent='DEA';
+    el('text',{x:x0+101,y:y0+24,fill:'#64748b','font-size':12,'font-weight':900,class:'svg-text'},svg).textContent='柱状图：绿柱缩短 → 红柱放大';
+    el('text',{x:54,y:474,fill:'#94a3b8','font-size':12,class:'svg-text'},svg).textContent='提示：零轴附近或零轴上方金叉通常比深度零轴下金叉更强，横盘时需防假信号。';
+  }
+
+  function drawKdjChart(){
+    const svg = document.getElementById('chart-kdj');
+    if(!svg) return;
+    svg.innerHTML='';
+    const W=760,H=500;
+    const defs=el('defs',{},svg);
+    const marker=el('marker',{id:'chart-kdj-arrow',viewBox:'0 0 10 10',refX:'8',refY:'5',markerWidth:'7',markerHeight:'7',orient:'auto-start-reverse'},defs);
+    el('path',{d:'M0,0 L10,5 L0,10 Z',fill:'#b45309'},marker);
+    const glow=el('filter',{id:'chart-kdj-glow',x:'-60%',y:'-60%',width:'220%',height:'220%'},defs);
+    el('feGaussianBlur',{stdDeviation:'3',result:'blur'},glow);
+    const merge=el('feMerge',{},glow); el('feMergeNode',{in:'blur'},merge); el('feMergeNode',{in:'SourceGraphic'},merge);
+    el('rect',{x:0,y:0,width:W,height:H,rx:24,fill:'#ffffff'},svg);
+    const candles=[
+      {o:128,c:125,h:129,l:124},{o:125,c:121.5,h:126,l:120.8},{o:121.5,c:118,h:122.4,l:117.2},{o:118,c:115.5,h:119,l:114.6},
+      {o:115.4,c:113.3,h:116,l:112.5},{o:113.2,c:112.4,h:114.1,l:111.6},{o:112.5,c:114.2,h:115.1,l:111.9},{o:114.1,c:116.7,h:117.3,l:113.6},
+      {o:116.6,c:119.3,h:120,l:116.1},{o:119.2,c:121.5,h:122.2,l:118.8},{o:121.3,c:123.7,h:124.2,l:120.8},{o:123.5,c:125.4,h:126,l:122.9}
+    ];
+    const ma=[127,125,122.8,120.4,117.8,115.6,114.2,114.7,116.2,118.6,120.6,122.5];
+    drawPricePanel(svg,54,42,652,190,candles,{ma});
+    el('text',{x:70,y:64,fill:'#0f172a','font-size':14,'font-weight':900,class:'svg-text'},svg).textContent='价格主图：下跌放缓后出现反弹K线';
+
+    const x0=54,y0=270,w=652,h=172;
+    el('rect',{x:x0,y:y0,width:w,height:h,rx:16,fill:'#ffffff',stroke:'#e2e8f0','stroke-width':1.2},svg);
+    const y=v=>y0+(100-v)/100*h;
+    const x=i=>x0+(i+.5)*w/12;
+    [80,50,20].forEach(v=>{
+      el('line',{x1:x0+18,y1:y(v),x2:x0+w-18,y2:y(v),stroke:v===50?'#e2e8f0':'#cbd5e1','stroke-width':v===50?1:1.4,'stroke-dasharray':v===50?'4 6':'7 5'},svg);
+      el('text',{x:x0+w-22,y:y(v)-6,'text-anchor':'end',fill:'#64748b','font-size':12,'font-weight':900,class:'svg-text'},svg).textContent=String(v);
+    });
+    el('rect',{x:x0+18,y:y(100),width:w-36,height:y(80)-y(100),fill:'rgba(16,150,110,.05)'},svg);
+    el('rect',{x:x0+18,y:y(20),width:w-36,height:y(0)-y(20),fill:'rgba(224,59,59,.05)'},svg);
+    el('text',{x:x0+24,y:y(86),fill:'#047857','font-size':12,'font-weight':900,class:'svg-text'},svg).textContent='高位区 80+';
+    el('text',{x:x0+24,y:y(10),fill:'#b91c1c','font-size':12,'font-weight':900,class:'svg-text'},svg).textContent='低位区 20-';
+
+    const K=[48,39,31,24,18,16,23,35,49,61,70,76];
+    const D=[55,48,41,34,27,22,21,26,36,48,58,66];
+    const J=[34,21,11,4,0,4,28,53,75,87,94,96];
+    const poly=(arr,color,width=3)=>el('polyline',{points:arr.map((v,i)=>`${x(i)},${y(v)}`).join(' '),fill:'none',stroke:color,'stroke-width':width,'stroke-linecap':'round','stroke-linejoin':'round'},svg);
+    poly(K,BLUE,3.2); poly(D,GOLD,3.2); poly(J,PURPLE,2.5);
+    const cx=x(6.25), cy=y(22);
+    el('circle',{cx,cy,r:10,fill:'#fff7ed',stroke:'#f59e0b','stroke-width':4,filter:'url(#chart-kdj-glow)'},svg);
+    el('line',{x1:cx+8,y1:cy-10,x2:cx+92,y2:cy-60,stroke:'#b45309','stroke-width':2.2,'marker-end':'url(#chart-kdj-arrow)'},svg);
+    el('rect',{x:cx+96,y:cy-86,width:154,height:44,rx:14,fill:'#0f172a',opacity:.94},svg);
+    el('text',{x:cx+111,y:cy-59,fill:'#fff','font-size':13,'font-weight':900,class:'svg-text'},svg).textContent='低位 K 上穿 D：金叉';
+    el('text',{x:x0+18,y:y0+24,fill:BLUE,'font-size':12,'font-weight':900,class:'svg-text'},svg).textContent='K';
+    el('text',{x:x0+45,y:y0+24,fill:GOLD,'font-size':12,'font-weight':900,class:'svg-text'},svg).textContent='D';
+    el('text',{x:x0+72,y:y0+24,fill:PURPLE,'font-size':12,'font-weight':900,class:'svg-text'},svg).textContent='J';
+    el('text',{x:x0+105,y:y0+24,fill:'#64748b','font-size':12,'font-weight':900,class:'svg-text'},svg).textContent='低位金叉比高位金叉更有反弹参考意义';
+    el('text',{x:54,y:474,fill:'#94a3b8','font-size':12,class:'svg-text'},svg).textContent='提示：KDJ 更敏感，适合短线观察；单边下跌中可能连续假金叉，需要价格确认配合。';
+  }
+
+  drawHaramiChart();
+  drawMacdChart();
+  drawKdjChart();
+
 })();
 </script>
 </body>
